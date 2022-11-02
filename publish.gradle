@@ -1,0 +1,57 @@
+checkPropertyExists("projectName")
+checkPropertyExists("projectGroup")
+checkPropertyExists("repositoryName")
+checkPropertyExists("repositoryURL")
+
+def getMavenSettingsCredentials = {
+    def userHome = System.getProperty('user.home')
+    def mavenSettings = new File(userHome, '.m2/settings.xml')
+    def xmlSlurper = new XmlSlurper()
+    def output = xmlSlurper.parse(mavenSettings)
+    return output.'servers'.'server'
+}
+
+def getCredentials = {
+    try {
+        def entries = getMavenSettingsCredentials()
+        for (entry in entries) {
+            if (entry.'id'.text() == repositoryName) {
+                return [username: entry.username.text(), password: entry.password.text()]
+            }
+        }
+        throw new Exception()
+    } catch (Exception ignored) {
+        //Try from environment variables if file does not exist
+        def username = System.getenv('MAVEN_DEPLOY_USER')
+        def password = System.getenv('MAVEN_DEPLOY_PASSWORD')
+        if (username == null || password == null) {
+            return [username: null, password: null]
+        } else {
+            return [username: username, password: password]
+        }
+    }
+}
+
+publishing {
+    publications {
+        pluginPublication(MavenPublication) {
+            from(components.java)
+            groupId = projectGroup
+            artifactId = projectName
+            version = gitVersion()
+        }
+    }
+    repositories {
+        if (repositoryURL.trim() != "") {
+            maven {
+                name = repositoryName
+                url = repositoryURL
+                def creds = getCredentials()
+                credentials {
+                    username = creds == null ? 'none' : creds.username
+                    password = creds == null ? 'none' : creds.password
+                }
+            }
+        }
+    }
+}

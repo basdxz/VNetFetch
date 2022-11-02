@@ -1,0 +1,50 @@
+plugins {
+    id 'java-library'
+    id 'idea'
+    id 'com.palantir.git-version' version '0.15.0'
+    id 'maven-publish'
+}
+
+group 'com.github.basdxz.vnetfetch'
+version gitVersion()
+
+def projectJavaVersion = JavaLanguageVersion.of(17)
+
+java {
+    toolchain {
+        languageVersion.set(projectJavaVersion)
+    }
+}
+
+idea {
+    module {
+        inheritOutputDirs = true
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+if (JavaVersion.current() != JavaVersion.VERSION_17) {
+    throw new GradleException("This project requires Java 17, but it's running on " + JavaVersion.current())
+}
+
+try {
+    version = gitVersion()
+}
+catch (Exception e) {
+    throw new IllegalStateException("This project must be version controlled by Git AND the repository must provide at least one tag!")
+}
+
+def checkPropertyExists(String propertyName) {
+    if (!project.hasProperty(propertyName)) {
+        throw new GradleException("This project requires a property \"" + propertyName + "\"! Please add it your \"gradle.properties\". You can find all properties and their description here: https://github.com/FalsePattern/JTweaker/blob/main/gradle.properties")
+    }
+}
+
+apply from: 'repositories.gradle'
+apply from: 'dependencies.gradle'
+apply from: 'publish.gradle'
+
+test {
+    useJUnitPlatform()
+}
