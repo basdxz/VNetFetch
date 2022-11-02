@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import static com.github.basdxz.vnetfetch.util.Constants.ETAG_HEADER;
 
+// TODO: Move the http client out of this project.
 @UtilityClass
 public final class HttpClientUtil {
     private static final Timeout MAX_TIMEOUT = Timeout.ofSeconds(5);

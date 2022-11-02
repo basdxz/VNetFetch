@@ -1,7 +1,6 @@
 package com.github.basdxz.vnetfetch.httpgetter.impl;
 
 import com.github.basdxz.vnetfetch.util.FileUtil;
-import com.github.basdxz.vnetfetch.util.HttpClientUtil;
 import lombok.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -38,17 +37,6 @@ public class CachedHttpGetter extends HttpGetter {
     public CachedHttpGetter(@NonNull CloseableHttpClient httpClient, @NonNull File cacheDirectory) {
         super(httpClient);
         this.cacheDirectory = cacheDirectory;
-    }
-
-    @SneakyThrows
-    public static void main(String[] args) {
-        val daLink = URI.create("https://launchermeta.mojang.com/mc/game/version_manifest.json");
-        try (val httpClient = HttpClientUtil.httpClient()) {
-            val theBook = new CachedHttpGetter(httpClient, new File("cache"));
-            val dataz = theBook.get(daLink);
-            val txt = new String(dataz, StandardCharsets.UTF_8);
-            System.out.println(txt);
-        }
     }
 
     @Override
