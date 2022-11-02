@@ -23,4 +23,8 @@ public final class FileUtil {
     public static InputStream fileInputStream(@NonNull File inputFile) throws IOException {
         return new BufferedFileChannelInputStream(inputFile);
     }
+
+    public static File appendToFileName(@NonNull File file, @NonNull String suffix) {
+        return new File(file.getAbsolutePath() + suffix);
+    }
 }
