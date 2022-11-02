@@ -55,7 +55,7 @@ public class CachedHttpGetter extends HttpGetter {
             if (cachedSha1 == null)
                 break cacheHit;
             val cachedDataSha1 = DigestUtils.sha1Hex(cachedData);
-            if (!cachedSha1.equals(cachedDataSha1))
+            if (!cachedSha1.equalsIgnoreCase(cachedDataSha1))
                 break cacheHit;
             val cachedEtag = loadCachedEtag(dataCacheDirectory, dataFileName)
                     .orElse(null);
