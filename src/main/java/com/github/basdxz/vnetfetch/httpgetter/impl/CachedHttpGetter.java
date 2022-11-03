@@ -103,7 +103,9 @@ public class CachedHttpGetter extends HttpGetter implements ICachedHttpGetter {
         val dataFileName = uriPath.substring(uriPath.lastIndexOf('/') + 1);
         if (dataFileName.isEmpty())
             throw new IllegalArgumentException("Invalid URI, must point to file: " + uri);
-        return Paths.get(cacheDirectory.getAbsolutePath(), DigestUtils.sha1Hex(uri.toString()), dataFileName).toFile();
+        val uriHash = DigestUtils.sha1Hex(uri.toString());
+        val uriShortHash = uriHash.substring(0, 2);
+        return Paths.get(cacheDirectory.getAbsolutePath(), uriShortHash, uriHash, dataFileName).toFile();
     }
 
     protected Optional<byte[]> loadCachedData(@NonNull File dataFile) {
